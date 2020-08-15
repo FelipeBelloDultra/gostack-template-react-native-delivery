@@ -119,7 +119,7 @@ const FoodDetails: React.FC = () => {
       if (extra.id === id) {
         return {
           ...extra,
-          quantity: extra.quantity === 0 ? 0 : extra.quantity - 1,
+          quantity: extra.quantity === 1 ? 1 : extra.quantity - 1,
         };
       }
 
@@ -134,7 +134,7 @@ const FoodDetails: React.FC = () => {
   }
 
   function handleDecrementFood(): void {
-    if (foodQuantity === 0) return;
+    if (foodQuantity === 1) return;
 
     setFoodQuantity(prev => prev - 1);
   }
@@ -144,7 +144,9 @@ const FoodDetails: React.FC = () => {
   }, [isFavorite, food]);
 
   const cartTotal = useMemo(() => {
-    // Calculate cartTotal
+    const total = food.price * foodQuantity;
+
+    return formatValue(total);
   }, [extras, food, foodQuantity]);
 
   async function handleFinishOrder(): Promise<void> {
