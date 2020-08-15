@@ -75,7 +75,25 @@ const FoodDetails: React.FC = () => {
     async function loadFood(): Promise<void> {
       const { id } = routeParams;
 
-      api.get(`foods/${id}`).then(response => setFood(response.data));
+      const response = await api.get(`foods/${id}`);
+
+      const responseFood = response.data;
+
+      const newFood = {
+        ...responseFood,
+        formattedPrice: formatValue(responseFood.price),
+      };
+
+      setFood(newFood);
+
+      const extrasFood = responseFood.extras;
+
+      const newExtras = extrasFood.map((extra: Extra) => ({
+        ...extra,
+        quantity: 0,
+      }));
+
+      setExtras(newExtras);
     }
 
     loadFood();
