@@ -139,18 +139,41 @@ const FoodDetails: React.FC = () => {
     setFoodQuantity(prev => prev - 1);
   }
 
-  const toggleFavorite = useCallback(() => {
+  const toggleFavorite = useCallback(async () => {
+    const { data } = await api.get<Food[]>('favorites');
+
+    const favorite = data.find(findFavorite => findFavorite.id === food.id);
+
+    if (favorite) {
+      await api.delete(`favorite/${food.id}`);
+    } else {
+      const newFood = food;
+
+      delete newFood.extras;
+
+      await api.post('favorites', newFood);
+    }
+
     setIsFavorite(!isFavorite);
   }, [isFavorite, food]);
 
   const cartTotal = useMemo(() => {
+    const totalExtras = extras.reduce((accumulator: number, extra: Extra) => {
+      accumulator += extra.quantity * extra.value;
+      return accumulator;
+    }, 0);
+
     const total = food.price * foodQuantity;
 
-    return formatValue(total);
+    return formatValue(total + totalExtras);
   }, [extras, food, foodQuantity]);
 
   async function handleFinishOrder(): Promise<void> {
-    // Finish the order and save on the API
+    const productId = food.id;
+
+    delete food.id;
+
+    await api.post('orders', { ...food, productId });
   }
 
   // Calculate the correct icon name

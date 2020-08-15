@@ -61,6 +61,7 @@ const Dashboard: React.FC = () => {
     async function loadFoods(): Promise<void> {
       const response = await api.get('foods', {
         params: {
+          name_like: searchValue,
           category_like: selectedCategory,
         },
       });
